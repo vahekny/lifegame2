@@ -1,98 +1,77 @@
 
-class Joker extends LivingCreature{
+let LivingCreature = require('./LivingCreature')
+
+module.exports = class Predator extends LivingCreature{
     constructor(x, y, index){
         super(x, y, index);
-        this.energy = 5;
-    }
-    getNewCoordinates() {
-        this.directions = [
-            [this.x - 1, this.y - 1],
-            [this.x, this.y -  1],
-            [this.x + 1, this.y - 1],
-            [this.x - 1, this.y],
-            [this.x + 1, this.y],
-            [this.x - 1, this.y + 1],
-            [this.x, this.y + 1],
-            [this.x + 1, this.y + 1]
-        ];
-      
+        this.energy = 0
     }
     
-    chooseCell4(character,character4) {
-        this.getNewCoordinates();
-        return super.chooseCell(character,character4);
-    }
-
+    
     move() {
+		var emptyCells = super.chooseCell(0);
+		var newCell = emptyCells[Math.floor(Math.random() * emptyCells.length)]
 
-        let emptyCells = this.chooseCell(0);
-        let newCell = random(emptyCells);
+		if (newCell) {
+			var newX = newCell[0];
+			var newY = newCell[1];
 
-        if (newCell) {
+			matrix[newY][newX] = matrix[this.y][this.x];
+			matrix[this.y][this.x] = 0;
 
-            let newX = newCell[0];
-            let newY = newCell[1];
+			this.x = newX;
+			this.y = newY
+		}
 
-            matrix[newY][newX] = this.index
-            matrix[this.y][this.x] = 0;
-
-
-            this.x = newX;
-            this.y = newY;
-            this.energy-=1;
-        }
-
-    }
-    eat() {
-        let emptyCells = this.chooseCell4(3,4);
-        let uteliq = random(emptyCells);
-
-        if (uteliq) {
+		this.energy=this.energy-6;
+		if (this.energy <= 0) {
+			this.die();
+		}
 
 
-            let newX = uteliq[0];
-            let newY = uteliq[1];
+	}
+	eat() {
+		var predatorCells = super.chooseCell(3);
+		var newCell = predatorCells[Math.floor(Math.random() * predatorCells.length)]
 
-            matrix[newY][newX] = this.index;
-            matrix[this.y][this.x] = 0;
+		if (newCell) {
 
+			var newX = newCell[0];
+			var newY = newCell[1];
 
+			matrix[newY][newX] = matrix[this.y][this.x];
+			matrix[this.y][this.x] = 0;
 
-                for (let i in grassArr) {
-                    if (newX === predatorArr[i].x && newY === predatorArr[i].y) {
-                        predatorArr.splice(i, 1);
-                        break;
-                    }
-                }
-      
-                for (let i in bathmanArr) {
-                    if (newX === bathmanArr[i].x && newY === bathmanArr[i].y) {
-                        bathmanArr.splice(i, 1);
-                        break;
-                    }
-                }
-            
-          
-            this.x = newX;
-            this.y = newY;
-            this.energy += 1
-        }
-    }
-    mul() {
+			this.x = newX;
+			this.y = newY;
+			this.energy+=1;
 
-        var newCell = random(this.chooseCell(0));
+			if (this.energy >= 12) {
+				// console.log(this.energy);
+				this.mul();
+			}
 
-        if (this.energy >= 6 && newCell) {
+		}
+		else {
+			this.move();
+		}
+	}
 
-            var newJoker = new Joker(newCell[0], newCell[1], this.index);
-            jokerArr.push(newJoker);
-            matrix[newCell[1]][newCell[0]] = this.index;
-            this.energy = 4;
-        }
-    }
+	mul() {
+		var emptyCells = super.chooseCell(0);
+		var newCell = emptyCells[Math.floor(Math.random() * emptyCells.length)]
 
-    die() {
-        if (this.energy <= 0) {
+		if (newCell) {
+			var newX = newCell[0];
+			var newY = newCell[1];
+            var jk = new Joker(newX, newY, 4)
+           jokerArr.push(jk)
+			this.energy = 1;
+		}
+	}
+
+	die() {
+        if (this.energy <= 1) {
             matrix[this.y][this.x] = 0;
             for (var i in jokerArr) {
                 if (this.x === jokerArr[i].x && this.y === jokerArr[i].y) {
@@ -103,7 +82,7 @@ class Joker extends LivingCreature{
         }
        
     }
-  
-    
-}
 
+
+
+}

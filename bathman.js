@@ -1,97 +1,77 @@
 
-class Bathman extends LivingCreature{
+let LivingCreature = require('./LivingCreature')
+
+module.exports = class Predator extends LivingCreature{
     constructor(x, y, index){
         super(x, y, index);
-        this.energy = 5;
-    }
-    getNewCoordinates() {
-        this.directions = [
-            [this.x - 1, this.y - 1],
-            [this.x, this.y -  1],
-            [this.x + 1, this.y - 1],
-            [this.x - 1, this.y],
-            [this.x + 1, this.y],
-            [this.x - 1, this.y + 1],
-            [this.x, this.y + 1],
-            [this.x + 1, this.y + 1]
-        ];
-    }
-    chooseCell3(character,character3) {
-        this.getNewCoordinates();
-        return super.chooseCell(character,character3);
-    }
-
-   
+		this.energy = 0
+	    }
+    
+    
     move() {
+		var emptyCells = super.chooseCell(0);
+		var newCell = emptyCells[Math.floor(Math.random() * emptyCells.length)]
 
-        let emptyCells = this.chooseCell(0);
-        let newCell = random(emptyCells);
+		if (newCell) {
+			var newX = newCell[0];
+			var newY = newCell[1];
 
-        if (newCell) {
+			matrix[newY][newX] = matrix[this.y][this.x];
+			matrix[this.y][this.x] = 0;
 
-            let newX = newCell[0];
-            let newY = newCell[1];
+			this.x = newX;
+			this.y = newY
+		}
 
-            matrix[newY][newX] = this.index
-            matrix[this.y][this.x] = 0;
-
-
-            this.x = newX;
-            this.y = newY;
-            this.energy--;
-        }
-
-    }
-    eat() {
-        let emptyCells = this.chooseCell3(2,3);
-        let uteliq = random(emptyCells);
-
-        if (uteliq) {
+		this.energy=this.energy-6;
+		if (this.energy <= 0) {
+			this.die();
+		}
 
 
-            let newX = uteliq[0];
-            let newY = uteliq[1];
+	}
+	eat() {
+		var jokerCells = super.chooseCell(4);
+		var newCell = jokerCells[Math.floor(Math.random() * jokerCells.length)]
 
-            matrix[newY][newX] = this.index;
-            matrix[this.y][this.x] = 0;
+		if (newCell) {
 
+			var newX = newCell[0];
+			var newY = newCell[1];
 
+			matrix[newY][newX] = matrix[this.y][this.x];
+			matrix[this.y][this.x] = 0;
 
-                for (let i in grassArr) {
-                    if (newX === grassArr[i].x && newY === grassArr[i].y) {
-                        grassArr.splice(i, 1);
-                        break;
-                    }
-                }
-      
-                for (let i in grasseaterArr) {
-                    if (newX === grasseaterArr[i].x && newY === grasseaterArr[i].y) {
-                        grasseaterArr.splice(i, 1);
-                        break;
-                    }
-                }
-            
-          
-            this.x = newX;
-            this.y = newY;
-            this.energy += 1
-        }
-    }
-    mul() {
+			this.x = newX;
+			this.y = newY;
+			this.energy+=1;
 
-        var newCell = random(this.chooseCell(0));
+			if (this.energy >= 12) {
+				// console.log(this.energy);
+				this.mul();
+			}
 
-        if (this.energy >= 6 && newCell) {
+		}
+		else {
+			this.move();
+		}
+	}
 
-            var newBathman = new Bathman(newCell[0], newCell[1], this.index);
-            bathmanArr.push(newBathman);
-            matrix[newCell[1]][newCell[0]] = this.index;
-            this.energy = 5;
-        }
-    }
+	mul() {
+		var emptyCells = super.chooseCell(0);
+		var newCell = emptyCells[Math.floor(Math.random() * emptyCells.length)]
 
-    die() {
-        if (this.energy <= 0) {
+		if (newCell) {
+			var newX = newCell[0];
+			var newY = newCell[1];
+            var bt = new Bathman(newX, newY, 5)
+            bathmanArr.push(bt)
+			this.energy = 1;
+		}
+	}
+
+	die() {
+        if (this.energy <= 1) {
             matrix[this.y][this.x] = 0;
             for (var i in bathmanArr) {
                 if (this.x == bathmanArr[i].x && this.y == bathmanArr[i].y) {
@@ -100,4 +80,7 @@ class Bathman extends LivingCreature{
             }
         }
     }
+
+
+
 }
