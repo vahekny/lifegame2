@@ -1,14 +1,14 @@
 
 let LivingCreature = require('./LivingCreature')
 
-module.exports = class Predator extends LivingCreature{
-    constructor(x, y, index){
-        super(x, y, index);
-		this.energy = 0
-	    }
-    
-    
-    move() {
+module.exports = class Predator extends LivingCreature {
+	constructor(x, y, index) {
+		super(x, y, index);
+		this.energy = 8
+	}
+
+
+	move() {
 		var emptyCells = super.chooseCell(0);
 		var newCell = emptyCells[Math.floor(Math.random() * emptyCells.length)]
 
@@ -23,7 +23,7 @@ module.exports = class Predator extends LivingCreature{
 			this.y = newY
 		}
 
-		this.energy=this.energy-6;
+		this.energy--;
 		if (this.energy <= 0) {
 			this.die();
 		}
@@ -32,7 +32,7 @@ module.exports = class Predator extends LivingCreature{
 	}
 	eat() {
 		var grassEaterCells = super.chooseCell(2);
-		var newCell = grassEaterCells[Math.floor(Math.random() * grasseaterCells.length)]
+		var newCell = grassEaterCells[Math.floor(Math.random() * grassEaterCells.length)]
 
 		if (newCell) {
 
@@ -42,12 +42,17 @@ module.exports = class Predator extends LivingCreature{
 			matrix[newY][newX] = matrix[this.y][this.x];
 			matrix[this.y][this.x] = 0;
 
+			for (var i in grassArr) {
+				if (grassArr[i].x == newX && grassArr[i].y == newY) {
+					grassArr.splice(i, 1)
+				}
+			}
+
 			this.x = newX;
 			this.y = newY;
-			this.energy+=1;
+			this.energy++;
 
 			if (this.energy >= 12) {
-				// console.log(this.energy);
 				this.mul();
 			}
 
@@ -64,22 +69,20 @@ module.exports = class Predator extends LivingCreature{
 		if (newCell) {
 			var newX = newCell[0];
 			var newY = newCell[1];
-            var Predator = new Predator(newX, newY, 3)
-            predatorArr.push(Predator)
-			this.energy = 1;
+			matrix[newY][newX] = 3
+			predatorArr.push(new Predator(newX, newY, 3))
+			this.energy = 6;
 		}
 	}
 
 	die() {
-        if (this.energy <= 1) {
-            matrix[this.y][this.x] = 0;
-            for (var i in predatorArr) {
-                if (this.x == predatorArr[i].x && this.y == predatorArr[i].y) {
-                    predatorArr.splice(i, 1);
-                }
-            }
-        }
-    }
+		matrix[this.y][this.x] = 0;
+		for (var i in predatorArr) {
+			if (predatorArr[i].x == this.x && predatorArr[i].y == this.y) {
+				predatorArr.splice(i, 1)
+			}
+		}
+	}
 
 
 

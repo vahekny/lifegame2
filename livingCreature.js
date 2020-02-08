@@ -4,7 +4,6 @@ module.exports = class LivingCreature {
 		this.y = y;
 		this.index = index;
 		this.multiply = 0;
-		this.energy = 0
 	}
 
 	getNewDirections(){
